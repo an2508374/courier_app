@@ -5,7 +5,7 @@ namespace SwiftParcel.Services.Orders.Application.Events
 {
     public class OrderApproved : IEvent
     {
-        public Guid OrderId { get; }
+        public Guid OrderId { get; set; }
         public OrderApproved(Guid orderId)
         {
             OrderId = orderId;

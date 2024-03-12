@@ -10,13 +10,17 @@ namespace SwiftParcel.Services.Deliveries.Application.Commands.Handlers
         private readonly IDeliveriesRepository _repository;
         private readonly IMessageBroker _messageBroker;
         private readonly IEventMapper _eventMapper;
+        private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IAppContext _appContext;
 
         public CompleteDeliveryHandler(IDeliveriesRepository repository, IMessageBroker messageBroker,
-            IEventMapper eventMapper)
+            IEventMapper eventMapper, IDateTimeProvider dateTimeProvider, IAppContext appContext)
         {
             _repository = repository;
             _messageBroker = messageBroker;
             _eventMapper = eventMapper;
+            _dateTimeProvider = dateTimeProvider;
+            _appContext = appContext;
         }
 
         public async Task HandleAsync(CompleteDelivery command)
@@ -26,8 +30,13 @@ namespace SwiftParcel.Services.Deliveries.Application.Commands.Handlers
             {
                 throw new DeliveryNotFoundException(command.DeliveryId);
             }
+            var identity = _appContext.Identity;
+            if (delivery.CourierId != identity.Id)
+            {
+                throw new UnauthorizedDeliveryAccessException(command.DeliveryId, identity.Id);
+            }
             
-            delivery.Complete();
+            delivery.Complete(_dateTimeProvider.Now, command.DeliveryAttemptDate);
             await _repository.UpdateAsync(delivery);
             var events = _eventMapper.MapAll(delivery.Events);
             await _messageBroker.PublishAsync(events.ToArray());

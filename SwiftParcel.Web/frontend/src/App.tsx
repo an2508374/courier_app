@@ -1,13 +1,12 @@
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import { RolesAuthRoute } from "./utils/others";
-import React, { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import { Loader } from "./components/loader";
 import Parcels from "./pages/parcels/parcels";
 import ManageParcels from "./pages/parcels/manage";
 import Register from "./pages/register";
 import ManageParcelsCourier from "./pages/parcels/courier";
 import Home from "./pages/home";
-import Deliveries from "./pages/deliveries";
 import ManageCouriers from "./pages/couriers/manage";
 import ManageCars from "./pages/cars/manage";
 import ManageParcelsCar from "./pages/cars/parcels";
@@ -16,7 +15,10 @@ import Inquiries from "./pages/inquiries/inquiries";
 import Offers from "./pages/offers/offersUser";
 import OfferRequests from "./pages/offers/offerRequests";
 import PendingOffers from "./pages/offers/pendingOffers";
-import Orders from "./pages/orders/orders";
+import YourDeliveries from "./pages/deliveries/yourDeliveries";
+import PendingDeliveries from "./pages/deliveries/pendingDeliveries";
+import OrdersUser from "./pages/orders/ordersUser";
+import OfferRequestsUser from "./pages/orders/offerRequestsUser";
 
 export function App() {
 
@@ -45,7 +47,7 @@ export function App() {
           <Route
             path="/offers"
             element={
-              <RolesAuthRoute roles={['user']}>
+              <RolesAuthRoute roles={['user', null]}>
                 <Offers/>
               </RolesAuthRoute>
             }
@@ -70,7 +72,15 @@ export function App() {
             path="/orders"
             element={
               <RolesAuthRoute roles={['user']}>
-                <Orders/>
+                <OrdersUser/>
+              </RolesAuthRoute>
+            }
+          />
+          <Route
+            path="/offer-requests-user"
+            element={
+              <RolesAuthRoute roles={['user']}>
+                <OfferRequestsUser/>
               </RolesAuthRoute>
             }
           />
@@ -83,10 +93,18 @@ export function App() {
             }
           />
           <Route
-            path="/deliveries"
+            path="/your-deliveries"
             element={
               <RolesAuthRoute roles={["courier"]}>
-                <Deliveries />
+                <YourDeliveries />
+              </RolesAuthRoute>
+            }
+          />
+                    <Route
+            path="/pending-deliveries"
+            element={
+              <RolesAuthRoute roles={["courier"]}>
+                <PendingDeliveries />
               </RolesAuthRoute>
             }
           />
